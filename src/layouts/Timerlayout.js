@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import Timer from '../utility/Timer'
 import RestartBtn from '../utility/RestartBtn'
+import { useSelector } from 'react-redux'
 
 export default function Timerlayout() {
     const [btnState, setBtnState] = useState(" Start")
     const [startTimer, setStartTimer] = useState(false)
     const [reset, setReset] = useState(false)
+    const user = useSelector(state => state.user)
+
 
     const toggleStartStop = () => {
         startTimer ? setBtnState(" Start") : setBtnState(" Stop ");
@@ -32,6 +35,7 @@ export default function Timerlayout() {
                     <Timer startTimer={startTimer} reset={reset} setReset={setReset} />
                 </div>
                 <button type="button" onClick={() => handleBtn("startStopBtn")} className="text-white bg-purple-700 hover:bg-purple-800 focus:outline-none  font-medium rounded-full text-sm px-3 w-48 py-1 text-center m-auto mb-3 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">{btnState}</button>
+                {user.username}
             </div>
         </>
     )
