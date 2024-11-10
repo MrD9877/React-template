@@ -4,6 +4,7 @@ import Timerlayout from "./layouts/Timerlayout.js"
 import Router from './routes/Router.js';
 import PageNotFound from './layouts/PageNotFound.js';
 import UserForm from './utility/UserForm.js';
+import Hooks from './utility/Hooks.js';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Timerlayout />} />
         <Route path='/userform' element={<UserForm />} />
+        <Route path='/hooks' element={<Hooks />} />
         <Route path='/route/*' element={<Router />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>

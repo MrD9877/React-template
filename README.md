@@ -1,70 +1,167 @@
-# Getting Started with Create React App
+# Hooks
+## useTranstion
+```
+import React, { useState, useTransition } from 'react'
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+export default function Hooks() {
+    const [inputValue, setInputValue] = useState()
+    const [isPending, startTransition] = useTransition()
+    const [list, setList] = useState([])
+    const handleInput = (e) => {
+        setInputValue(e.target.value)
+        startTransition(() => {
+            let l = []
+            for (let i = 0; i < 10000; i++) {
+                l.push(e.target.value)
+            }
+            setList(l)
+        })
+    }
+    return (
+        <div>
+            <input value={inputValue} onChange={(e) => handleInput(e)} type="text" />
+            {isPending ? "loading..." : list.map((item) => {
+                return <div> {item} </div>
+            })}
+        </div>
+    )
+}
+```
+## useDeferredValue
+```
+export default function Hooks() {
+    const [inputValue, setInputValue] = useState("")
 
-## Available Scripts
+    return (
+        <div>
+            <input value={inputValue} onChange={(e) => setInputValue(e.target.value)} type="text" />
+            <NestedComponent input={inputValue} />
+        </div>
+    )
+}
+```
+```
+export default function NestedComponent({ input }) {
+    const difvalue = useDeferredValue(input)
+    const list = useMemo(() => {
+        let l = []
+        for (let i = 0; i < 10000; i++) {
+            l.push(<div key={i}>{difvalue}</div>)
+        }
+        return l
+    }, [difvalue])
+    return list
+}
+```
+## useTranstion vs useDeferredValue
+***useTansition*** deplay rerender but still update the state where as ***useDeferredValue*** deply state update which will be usefull if feching data base on userinput as you do not have to fech on every key stroke.
 
-In the project directory, you can run:
+## useContext
+```
+import { createContext, useState } from 'react';
+import NestedComponent from './NestedComponent';
+export const ThemeContext = createContext('light');
 
-### `npm start`
+export default function Hooks() {
+    const [theme, setTheme] = useState("light")
+    return (
+        <div>
+            <button onClick={() => (theme === "light") ? setTheme("dark") : setTheme("light")}>change theme</button>
+            <ThemeContext.Provider value={theme}>
+                <NestedComponent />
+            </ThemeContext.Provider>
+        </div>
+    )
+}
+```
+### Consume Context
+```
+import React, { useContext } from 'react'
+import { ThemeContext } from './Hooks'
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+export default function NestedComponent() {
+    const theme = useContext(ThemeContext)
+    return <div>{theme}</div>
+}
+```
+## UseReducer
+```
+import React, { useReducer } from 'react'
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+const ACTIONS = {
+    ADD: "increment",
+    SUBTRACT: "dicrement"
+}
 
-### `npm test`
+function reducer(state, action) {
+    switch (action.type) {
+        case ACTIONS.ADD:
+            return { count: state.count + 1 };
+        case ACTIONS.SUBTRACT:
+            return { count: state.count - 1 };
+        default:
+            return state
+    }
+}
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+export default function Hooks() {
+    const [state, dispatch] = useReducer(reducer, { count: 0 })
+    const add = () => {
+        dispatch({ type: ACTIONS.ADD })
+    }
+    const subtract = () => {
+        dispatch({ type: ACTIONS.SUBTRACT })
+    }
+    return (
+        <div>
+            {state.count}
+            <button onClick={add}>+</button>
+            <button onClick={subtract}>-</button>
+        </div>
+    )
+}
+```
+## useId
+generate unique id to be used in for html id 
+```
+const id = useId()
+```
+## useMemo
+usememo cache value of given function 
+```
+const val = useMemo(()=>{
+    //code here
+})
+```
+## useCallback
+usememo cache function of given function and only change when dependency change
+```
+const fnc = useCallback(()=>{
+    //code here
+},[dependency]) 
+```
+## useEvent
+usememo cache function of given function it will not rerender for any dependency
+```
+const fnc = useEvent(()=>{
+    //code here
+})
+```
+## useEffectEvent
+**experimental**
+remove annoying error when do not want to give everything a dependency.
+```
+ const onUrlchange = useEffectEvent((url) => {
+        console.log(`on ${url}${cart}`)
+    })
+    useEffect(() => {
+        onUrlchange(url)
+    }, [url])
+```
 
-### `npm run build`
+# Tricks
+get element coodinates
+```
+const { bottom } = btn.current.getBoundingClientRect()
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
