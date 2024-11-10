@@ -54,7 +54,7 @@ export default function NestedComponent({ input }) {
 }
 ```
 ## useTranstion vs useDeferredValue
-***useTansition*** delay rerender but still update the state where as ***useDeferredValue*** delay state update which will be usefull if feching data base on userinput as you do not have to fech on every key stroke.
+***useTansition*** delay rerender but still update the state where as ***useDeferredValue*** delay state update which will be usefull if feching data base on userinput as you do not have to fetch on every key stroke.
 
 ## useContext
 ```
